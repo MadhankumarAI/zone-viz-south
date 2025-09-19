@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        map: {
+          bg: "hsl(var(--map-bg))",
+          card: "hsl(var(--map-card))",
+          "card-border": "hsl(var(--map-card-border))",
+          "text-primary": "hsl(var(--map-text-primary))",
+          "text-secondary": "hsl(var(--map-text-secondary))",
+          safe: "hsl(var(--map-safe))",
+          warning: "hsl(var(--map-warning))",
+          alert: "hsl(var(--map-alert))",
+          offline: "hsl(var(--map-offline))",
+          maintenance: "hsl(var(--map-maintenance))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
