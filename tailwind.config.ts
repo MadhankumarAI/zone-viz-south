@@ -69,6 +69,22 @@ export default {
           offline: "hsl(var(--map-offline))",
           maintenance: "hsl(var(--map-maintenance))",
         },
+        sentinel: {
+          bg: "hsl(var(--sentinel-bg))",
+          container: "hsl(var(--sentinel-container))",
+          border: "hsl(var(--sentinel-border))",
+          text: "hsl(var(--sentinel-text))",
+          muted: "hsl(var(--sentinel-muted))",
+          green: "hsl(var(--sentinel-green))",
+          "green-hover": "hsl(var(--sentinel-green-hover))",
+          blue: "hsl(var(--sentinel-blue))",
+          red: "hsl(var(--sentinel-red))",
+          yellow: "hsl(var(--sentinel-yellow))",
+          purple: "hsl(var(--sentinel-purple))",
+        },
+      },
+      fontFamily: {
+        'fira-sans': ['Fira Sans', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

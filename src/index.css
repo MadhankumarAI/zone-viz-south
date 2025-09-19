@@ -52,6 +52,19 @@ All colors MUST be HSL.
     --map-text-primary: 210 40% 98%;
     --map-text-secondary: 218 11% 65%;
 
+    /* Sentinel theme colors */
+    --sentinel-bg: 17 24% 15%;
+    --sentinel-container: 30 41% 23%;
+    --sentinel-border: 51 65% 33%;
+    --sentinel-text: 248 250 98%;
+    --sentinel-muted: 148 163 72%;
+    --sentinel-green: 34 197% 47%;
+    --sentinel-green-hover: 22 163% 37%;
+    --sentinel-blue: 59 130% 49%;
+    --sentinel-red: 239 68% 34%;
+    --sentinel-yellow: 245 158% 11%;
+    --sentinel-purple: 147 51% 58%;
+
     --sidebar-background: 220 13% 18%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 217 91% 60%;
@@ -104,6 +117,19 @@ All colors MUST be HSL.
     --map-card-border: 215 28% 25%;
     --map-text-primary: 210 40% 98%;
     --map-text-secondary: 218 11% 65%;
+
+    /* Sentinel theme colors */
+    --sentinel-bg: 17 24% 15%;
+    --sentinel-container: 30 41% 23%;
+    --sentinel-border: 51 65% 33%;
+    --sentinel-text: 248 250 98%;
+    --sentinel-muted: 148 163 72%;
+    --sentinel-green: 34 197% 47%;
+    --sentinel-green-hover: 22 163% 37%;
+    --sentinel-blue: 59 130% 49%;
+    --sentinel-red: 239 68% 34%;
+    --sentinel-yellow: 245 158% 11%;
+    --sentinel-purple: 147 51% 58%;
 
     --sidebar-background: 220 13% 18%;
     --sidebar-foreground: 210 40% 98%;
