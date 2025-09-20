@@ -4,6 +4,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Link } from "react-router-dom";
 import { Shield, Camera, Map, Activity, AlertTriangle, FileText, ArrowRight } from "lucide-react";
 import DroneSim from "@/components/DroneSim";
+import ElectricFence from "@/components/ElectricFence";
 import { animated, useSpring } from "@react-spring/web";
 
 const features = [
@@ -105,6 +106,14 @@ const Index = () => {
           <div className="flex-1 w-full max-w-xl h-[500px]">
             <DroneSim />
           </div>
+        </div>
+      </div>
+
+      {/* Electric Fence Section */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-safence-primary/5 to-transparent"></div>
+        <div className="relative">
+          <ElectricFence />
         </div>
       </div>
 

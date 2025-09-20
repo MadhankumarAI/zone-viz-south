@@ -22,10 +22,10 @@ export function DashboardHeader() {
         {/* Navigation Menu with slide-in animation */}
         <nav className="flex items-center gap-6">
           {[
+            { path: "/", label: "Home" },
             { path: "/dashboard", label: "Dashboard" },
-            { path: "/camera-feed", label: "Camera Feed" },
             { path: "/map", label: "Map View" },
-            { path: "/alerts", label: "Alerts" },
+            { path: "/system-status", label: "System Status" },
             { path: "/logs-history", label: "History" },
           ].map((item, index) => (
             <Link
@@ -45,13 +45,6 @@ export function DashboardHeader() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
             </Link>
           ))}
-          <a
-            href="#"
-            className="text-white/90 text-sm hover:text-white transition-all duration-300 hover:scale-105 relative group"
-          >
-            System Status
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
-          </a>
         </nav>
 
         {/* Right Side with animated elements */}

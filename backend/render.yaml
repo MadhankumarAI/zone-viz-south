@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: power-grid-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false  # Set this in Render dashboard with your MongoDB Atlas connection string
+    healthCheckPath: /health

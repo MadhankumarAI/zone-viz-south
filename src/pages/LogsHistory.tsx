@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { DashboardHeader } from "../components/DashboardHeader";
-import { Footer } from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, Search, Filter, FileText, PanelLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Filter, FileText, PanelLeft, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LogEvent {
@@ -95,13 +93,13 @@ function StatusBadge({ status }: { status: LogEvent["status"] }) {
       case "Critical":
         return "bg-red-500 text-white hover:bg-red-600";
       case "Warning":
-        return "border border-sentinel-border bg-transparent text-sentinel-text hover:bg-sentinel-border/20";
+        return "bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200";
       case "Info":
-        return "bg-[#262A33] text-sentinel-text hover:bg-[#262A33]/80";
+        return "bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200";
       case "Normal":
-        return "border border-sentinel-border bg-transparent text-sentinel-text hover:bg-sentinel-border/20";
+        return "bg-green-100 text-green-800 border border-green-200 hover:bg-green-200";
       default:
-        return "border border-sentinel-border bg-transparent text-sentinel-text";
+        return "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200";
     }
   };
 
@@ -116,9 +114,103 @@ export function LogsHistory() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const handleExportCSV = () => {
+    // Filter data based on search query
+    const filteredData = sampleData.filter(event => 
+      event.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.deviceId.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Create CSV content
+    const csvContent = [
+      ['Event ID', 'Timestamp', 'Type', 'Device ID', 'Status'],
+      ...filteredData.map(event => [
+        event.id,
+        event.timestamp,
+        event.type,
+        event.deviceId,
+        event.status
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    // Create and download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `logs-history-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = () => {
+    // For PDF export, we'll create a simple HTML table and use browser's print to PDF
+    const filteredData = sampleData.filter(event => 
+      event.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.deviceId.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Logs History Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .critical { background-color: #ffebee; }
+            .warning { background-color: #fff3e0; }
+            .info { background-color: #e3f2fd; }
+            .normal { background-color: #f1f8e9; }
+          </style>
+        </head>
+        <body>
+          <h1>Logs History Report</h1>
+          <p>Generated on: ${new Date().toLocaleString()}</p>
+          <p>Total Events: ${filteredData.length}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Event ID</th>
+                <th>Timestamp</th>
+                <th>Type</th>
+                <th>Device ID</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredData.map(event => `
+                <tr class="${event.status.toLowerCase()}">
+                  <td>${event.id}</td>
+                  <td>${event.timestamp}</td>
+                  <td>${event.type}</td>
+                  <td>${event.deviceId}</td>
+                  <td>${event.status}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-sentinel-bg">
-      <DashboardHeader />
       
       <div className="flex">
         {/* Collapsible Sidebar */}
@@ -172,12 +264,18 @@ export function LogsHistory() {
                     Filter
                   </Button>
                   
-                  <Button className="bg-sentinel-green hover:bg-sentinel-green/90 text-white">
-                    <FileText className="w-4 h-4 mr-2" />
+                  <Button 
+                    onClick={handleExportCSV}
+                    className="bg-green-600 hover:bg-green-700 text-white font-medium"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
                     Export CSV
                   </Button>
                   
-                  <Button className="bg-sentinel-green hover:bg-sentinel-green/90 text-white">
+                  <Button 
+                    onClick={handleExportPDF}
+                    className="bg-green-600 hover:bg-green-700 text-white font-medium"
+                  >
                     <FileText className="w-4 h-4 mr-2" />
                     Export PDF
                   </Button>
@@ -186,23 +284,23 @@ export function LogsHistory() {
             </div>
 
             {/* Data Table */}
-            <div className="bg-[#1E2128] rounded-lg border border-sentinel-border overflow-hidden">
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-sentinel-border hover:bg-transparent">
-                    <TableHead className="bg-[#171A1F] text-sentinel-muted font-medium py-4 px-4 w-[280px]">
+                  <TableRow className="border-b border-gray-200 hover:bg-transparent">
+                    <TableHead className="bg-gray-50 text-gray-700 font-medium py-4 px-4 w-[280px]">
                       Event ID
                     </TableHead>
-                    <TableHead className="bg-[#171A1F] text-sentinel-muted font-medium py-4 px-4 w-[280px]">
+                    <TableHead className="bg-gray-50 text-gray-700 font-medium py-4 px-4 w-[280px]">
                       Timestamp
                     </TableHead>
-                    <TableHead className="bg-[#171A1F] text-sentinel-muted font-medium py-4 px-4 w-[210px]">
+                    <TableHead className="bg-gray-50 text-gray-700 font-medium py-4 px-4 w-[210px]">
                       Type
                     </TableHead>
-                    <TableHead className="bg-[#171A1F] text-sentinel-muted font-medium py-4 px-4 w-[210px]">
+                    <TableHead className="bg-gray-50 text-gray-700 font-medium py-4 px-4 w-[210px]">
                       Device ID
                     </TableHead>
-                    <TableHead className="bg-[#171A1F] text-sentinel-muted font-medium py-4 px-4 w-[140px] text-right">
+                    <TableHead className="bg-gray-50 text-gray-700 font-medium py-4 px-4 w-[140px] text-right">
                       Status
                     </TableHead>
                   </TableRow>
@@ -212,20 +310,20 @@ export function LogsHistory() {
                     <TableRow
                       key={event.id}
                       className={cn(
-                        "border-b border-sentinel-border hover:bg-transparent",
-                        index % 2 === 0 ? "bg-[#1E2128]" : "bg-[#171A1F]"
+                        "border-b border-gray-200 hover:bg-gray-50",
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       )}
                     >
-                      <TableCell className="text-sentinel-text py-4 px-4 font-normal">
+                      <TableCell className="text-gray-900 py-4 px-4 font-normal">
                         {event.id}
                       </TableCell>
-                      <TableCell className="text-sentinel-text py-4 px-4 font-normal">
+                      <TableCell className="text-gray-900 py-4 px-4 font-normal">
                         {event.timestamp}
                       </TableCell>
-                      <TableCell className="text-sentinel-text py-4 px-4 font-normal">
+                      <TableCell className="text-gray-900 py-4 px-4 font-normal">
                         {event.type}
                       </TableCell>
-                      <TableCell className="text-sentinel-text py-4 px-4 font-normal">
+                      <TableCell className="text-gray-900 py-4 px-4 font-normal">
                         {event.deviceId}
                       </TableCell>
                       <TableCell className="py-4 px-4 text-right">
@@ -277,8 +375,6 @@ export function LogsHistory() {
           </div>
         )}
       </div>
-
-      <Footer />
     </div>
   );
 }
