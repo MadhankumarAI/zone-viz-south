@@ -69,18 +69,15 @@ export default {
           offline: "hsl(var(--map-offline))",
           maintenance: "hsl(var(--map-maintenance))",
         },
-        sentinel: {
-          bg: "hsl(var(--sentinel-bg))",
-          container: "hsl(var(--sentinel-container))",
-          border: "hsl(var(--sentinel-border))",
-          text: "hsl(var(--sentinel-text))",
-          muted: "hsl(var(--sentinel-muted))",
-          green: "hsl(var(--sentinel-green))",
-          "green-hover": "hsl(var(--sentinel-green-hover))",
-          blue: "hsl(var(--sentinel-blue))",
-          red: "hsl(var(--sentinel-red))",
-          yellow: "hsl(var(--sentinel-yellow))",
-          purple: "hsl(var(--sentinel-purple))",
+        safence: {
+          primary: "hsl(var(--safence-primary))",
+          "primary-hover": "hsl(var(--safence-primary-hover))",
+          dark: "hsl(var(--safence-dark))",
+          light: "hsl(var(--safence-light))",
+          gray: "hsl(var(--safence-gray))",
+          success: "hsl(var(--safence-success))",
+          warning: "hsl(var(--safence-warning))",
+          danger: "hsl(var(--safence-danger))",
         },
       },
       fontFamily: {
@@ -92,6 +89,16 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)"
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)"
+          }
+        },
         "accordion-down": {
           from: {
             height: "0",
@@ -110,6 +117,7 @@ export default {
         },
       },
       animation: {
+        "fade-in": "fade-in 0.6s ease-out",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

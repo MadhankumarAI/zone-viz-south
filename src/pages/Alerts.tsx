@@ -5,35 +5,39 @@ import { ActivitySummary } from "../components/alerts/ActivitySummary";
 
 export function Alerts() {
   return (
-    <div className="min-h-screen bg-sentinel-bg text-sentinel-text">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <DashboardHeader />
 
-      {/* Main Layout */}
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Left Sidebar - Filters */}
-        <AlertsSidebar />
+      {/* Main Layout - Responsive */}
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
+        {/* Left Sidebar - Filters - Responsive */}
+        <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-border">
+          <AlertsSidebar />
+        </div>
 
-        {/* Main Content - Alerts Feed */}
-        <AlertsFeed />
+        {/* Main Content - Alerts Feed - Responsive */}
+        <div className="flex-1 overflow-hidden">
+          <AlertsFeed />
+        </div>
 
-        {/* Right Sidebar - Activity Summary */}
-        <div className="w-80 p-6 bg-sentinel-bg border-l border-sentinel-border">
+        {/* Right Sidebar - Activity Summary - Hidden on mobile, collapsible on tablet */}
+        <div className="hidden xl:block w-80 p-6 bg-card border-l border-border">
           <ActivitySummary />
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-sentinel-bg border-t border-sentinel-border px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6 text-sm text-sentinel-text">
-            <a href="#" className="hover:text-sentinel-green transition-colors">
+      {/* Footer - Responsive */}
+      <div className="bg-card border-t border-border px-4 lg:px-8 py-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4 lg:gap-6 text-sm text-muted-foreground">
+            <a href="#" className="hover:text-safence-primary transition-colors">
               Product
             </a>
-            <a href="#" className="hover:text-sentinel-green transition-colors">
+            <a href="#" className="hover:text-safence-primary transition-colors">
               Resources
             </a>
-            <a href="#" className="hover:text-sentinel-green transition-colors">
+            <a href="#" className="hover:text-safence-primary transition-colors">
               Company
             </a>
           </div>
@@ -41,7 +45,7 @@ export function Alerts() {
             {/* Social Icons */}
             <a
               href="#"
-              className="text-sentinel-text opacity-80 hover:opacity-100 transition-opacity"
+              className="text-muted-foreground opacity-80 hover:opacity-100 hover:text-safence-primary transition-all"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
                 <path
@@ -52,7 +56,7 @@ export function Alerts() {
             </a>
             <a
               href="#"
-              className="text-sentinel-text opacity-80 hover:opacity-100 transition-opacity"
+              className="text-muted-foreground opacity-80 hover:opacity-100 hover:text-safence-primary transition-all"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
                 <path
@@ -63,7 +67,7 @@ export function Alerts() {
             </a>
             <a
               href="#"
-              className="text-sentinel-text opacity-80 hover:opacity-100 transition-opacity"
+              className="text-muted-foreground opacity-80 hover:opacity-100 hover:text-safence-primary transition-all"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
                 <path
@@ -74,7 +78,7 @@ export function Alerts() {
             </a>
             <a
               href="#"
-              className="text-sentinel-text opacity-80 hover:opacity-100 transition-opacity"
+              className="text-muted-foreground opacity-80 hover:opacity-100 hover:text-safence-primary transition-all"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
                 <path

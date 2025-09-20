@@ -1,91 +1,70 @@
-import { SentinelLogo } from "./ui/sentinel-logo";
+import { SafenceLogo } from "./ui/safence-logo";
+import { Button } from "./ui/button";
 import { Link, useLocation } from "react-router-dom";
 
 export function DashboardHeader() {
   const location = useLocation();
 
   return (
-    <div className="w-full h-16 bg-sentinel-green shadow-sm border-b border-sentinel-border">
-      <div className="flex items-center justify-between px-6 h-full">
-        {/* Logo and Brand */}
-        <div className="flex items-center gap-2">
-          <SentinelLogo className="text-white" size={32} />
-          <h1 className="font-fira-sans text-2xl font-bold italic text-white">
-            SentinelGuard
+    <div className="w-full h-16 bg-safence-primary shadow-lg border-b border-border relative overflow-hidden">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-safence-primary via-safence-primary-hover to-safence-primary opacity-80 animate-pulse"></div>
+      
+      <div className="relative flex items-center justify-between px-6 h-full">
+        {/* Logo and Brand with hover animation */}
+        <Link to="/" className="flex items-center gap-3 group transition-transform duration-300 hover:scale-105">
+          <SafenceLogo className="text-white" size={32} />
+          <h1 className="font-fira-sans text-2xl font-bold italic text-white group-hover:text-safence-light transition-colors duration-300">
+            Safence
           </h1>
-        </div>
+        </Link>
 
-        {/* Navigation Menu */}
+        {/* Navigation Menu with slide-in animation */}
         <nav className="flex items-center gap-6">
-          <Link
-            to="/dashboard"
-            className={`text-sm hover:text-white transition-colors ${
-              location.pathname === "/dashboard"
-                ? "text-white font-semibold"
-                : "text-white/90"
-            }`}
-          >
-            Live Dashboard
-          </Link>
-          <Link
-            to="/camera-feed"
-            className={`text-sm hover:text-white transition-colors ${
-              location.pathname === "/camera-feed"
-                ? "text-white font-semibold"
-                : "text-white/90"
-            }`}
-          >
-            Camera Feed
-          </Link>
-          <Link
-            to="/map"
-            className={`text-sm hover:text-white transition-colors ${
-              location.pathname === "/map"
-                ? "text-white font-semibold"
-                : "text-white/90"
-            }`}
-          >
-            Map View
-          </Link>
-          <Link
-            to="/alerts"
-            className={`text-sm hover:text-white transition-colors ${
-              location.pathname === "/alerts"
-                ? "text-white font-semibold"
-                : "text-white/90"
-            }`}
-          >
-            Alerts
-          </Link>
-          <Link
-            to="/logs-history"
-            className={`text-sm hover:text-white transition-colors ${
-              location.pathname === "/logs-history"
-                ? "text-white font-semibold"
-                : "text-white/90"
-            }`}
-          >
-            History
-          </Link>
+          {[
+            { path: "/dashboard", label: "Dashboard" },
+            { path: "/camera-feed", label: "Camera Feed" },
+            { path: "/map", label: "Map View" },
+            { path: "/alerts", label: "Alerts" },
+            { path: "/logs-history", label: "History" },
+          ].map((item, index) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`text-sm transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5 relative group ${
+                location.pathname === item.path
+                  ? "text-white font-semibold"
+                  : "text-white/90 hover:text-white"
+              }`}
+              style={{
+                animationDelay: `${index * 100}ms`,
+              }}
+            >
+              {item.label}
+              {/* Animated underline */}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+          ))}
           <a
             href="#"
-            className="text-white/90 text-sm hover:text-white transition-colors"
+            className="text-white/90 text-sm hover:text-white transition-all duration-300 hover:scale-105 relative group"
           >
             System Status
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
           </a>
         </nav>
 
-        {/* Right Side - Search, Notifications, Avatar */}
+        {/* Right Side with animated elements */}
         <div className="flex items-center gap-4">
-          {/* Search Bar */}
-          <div className="relative">
+          {/* Search Bar with focus animation */}
+          <div className="relative group">
             <input
               type="text"
               placeholder="Search logs, devices..."
-              className="w-64 h-9 pl-10 pr-4 text-sm bg-sentinel-green border border-white/40 rounded-md text-white placeholder:text-white/80 focus:outline-none focus:ring-1 focus:ring-white"
+              className="w-64 h-9 pl-10 pr-4 text-sm bg-white/10 border border-white/40 rounded-md text-white placeholder:text-white/80 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             />
             <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/80 group-focus-within:text-white transition-colors duration-300"
               viewBox="0 0 16 16"
               fill="none"
             >
@@ -100,9 +79,9 @@ export function DashboardHeader() {
             </svg>
           </div>
 
-          {/* Notification Bell */}
-          <button className="p-3 bg-sentinel-green/40 rounded-md hover:bg-sentinel-green/60 transition-colors">
-            <svg className="w-4 h-4 text-white" viewBox="0 0 16 16" fill="none">
+          {/* Notification Bell with pulse animation */}
+          <button className="p-3 bg-white/10 rounded-md hover:bg-white/20 transition-all duration-300 hover:scale-110 group backdrop-blur-sm">
+            <svg className="w-4 h-4 text-white group-hover:animate-pulse" viewBox="0 0 16 16" fill="none">
               <path
                 d="M8.61727 13.6025C8.81585 13.3269 9.19487 13.2413 9.4953 13.4147C9.7958 13.5881 9.91137 13.9594 9.77208 14.2692L9.74072 14.33C9.56431 14.6355 9.31065 14.8891 9.00526 15.0655C8.69981 15.2418 8.35295 15.3349 8.00026 15.335C7.64751 15.335 7.30078 15.2418 6.99526 15.0655C6.72787 14.9111 6.50013 14.6976 6.32919 14.4419L6.25918 14.33L6.22777 14.2692C6.08852 13.9594 6.20411 13.5881 6.50454 13.4147C6.80498 13.2413 7.184 13.3269 7.38259 13.6025L7.41991 13.66L7.46835 13.7333C7.52168 13.8028 7.58888 13.8613 7.66526 13.9054C7.76704 13.9641 7.88275 13.995 8.00026 13.995C8.11778 13.9949 8.23349 13.9641 8.33526 13.9054C8.43704 13.8466 8.52119 13.7618 8.57995 13.66L8.61727 13.6025Z"
                 fill="currentColor"
@@ -112,10 +91,13 @@ export function DashboardHeader() {
                 fill="currentColor"
               />
             </svg>
+            {/* Notification dot */}
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-safence-danger rounded-full animate-ping"></span>
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-safence-danger rounded-full"></span>
           </button>
 
-          {/* User Avatar */}
-          <div className="w-9 h-9 rounded-full bg-yellow-100 border border-yellow-300 overflow-hidden">
+          {/* User Avatar with hover effect */}
+          <div className="w-9 h-9 rounded-full bg-white/20 border-2 border-white/40 overflow-hidden hover:scale-110 transition-transform duration-300 cursor-pointer backdrop-blur-sm">
             <img
               src="https://api.builder.io/api/v1/image/assets/TEMP/12bcc753772a48d717586ab0695784b0338cbcaf?width=72"
               alt="User Avatar"
