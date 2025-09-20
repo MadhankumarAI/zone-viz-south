@@ -1,12 +1,8 @@
-import { DashboardHeader } from "../components/DashboardHeader";
 import { DashboardSidebar } from "../components/DashboardSidebar";
 
 export function Dashboard() {
   return (
     <div className="min-h-screen bg-sentinel-bg text-sentinel-text">
-      {/* Header */}
-      <DashboardHeader />
-
       {/* Main Layout */}
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Sidebar */}
