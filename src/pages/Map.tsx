@@ -130,45 +130,6 @@ export default function Map() {
               <MapLegend />
             </div>
           </div>
-
-          {/* Selected Pin Info
-          {selectedPin && (
-            <div className="bg-map-card border border-map-card-border rounded-lg p-4">
-              <h3 className="text-map-text-primary font-semibold mb-2">Selected Device</h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-map-text-secondary">Name:</span>
-                  <span className="text-map-text-primary ml-2">{selectedPin.name}</span>
-                </div>
-                <div>
-                  <span className="text-map-text-secondary">Status:</span>
-                  <span className={`ml-2 capitalize font-medium ${
-                    selectedPin.status === 'safe' ? 'text-map-safe' :
-                    selectedPin.status === 'warning' ? 'text-map-warning' :
-                    selectedPin.status === 'alert' ? 'text-map-alert' :
-                    selectedPin.status === 'offline' ? 'text-map-offline' :
-                    'text-map-maintenance'
-                  }`}>
-                    {selectedPin.status}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-map-text-secondary">Type:</span>
-                  <span className="text-map-text-primary ml-2 capitalize">{selectedPin.type}</span>
-                </div>
-                <div>
-                  <span className="text-map-text-secondary">Location:</span>
-                  <span className="text-map-text-primary ml-2">{selectedPin.district}, {selectedPin.state}</span>
-                </div>
-                {selectedPin.description && (
-                  <div className="col-span-2">
-                    <span className="text-map-text-secondary">Description:</span>
-                    <span className="text-map-text-primary ml-2">{selectedPin.description}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
     </div>
