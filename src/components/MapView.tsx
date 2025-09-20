@@ -937,105 +937,79 @@ export default function MapView({ onPinClick, filters }: MapViewProps) {
         </div>
       )}
       
-      {/* Mobile-Optimized Control Panel */}
-      <div className={`absolute ${isMobile ? 'top-2 left-2 right-2' : 'top-4 right-4'} bg-map-card rounded-lg shadow-lg p-3 ${isMobile ? 'max-w-none' : 'max-w-xs'} z-[999] border border-map-card-border`}>
-        {/* Location Status */}
-        <div className="mb-3">
-          {userLocation ? (
-            <div className="flex items-center gap-2 text-map-safe text-sm">
-              <Navigation className="w-4 h-4" />
-              <span className="font-medium">GPS Enabled</span>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {locationError && (
-                <div className="text-destructive text-xs p-2 bg-destructive/10 rounded">
-                  {locationError}
-                </div>
-              )}
-              <button
-                onClick={getCurrentLocation}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-2 rounded text-sm flex items-center justify-center gap-2 transition-colors"
-              >
-                <MapPin className="w-4 h-4" />
-                Enable GPS
-              </button>
-            </div>
-          )}
+{/* Mobile-Optimized Control Panel - GPS removed */}
+{(selectedPin && !showPinDetails) || (routeInfo && !showRoutePanel) ? (
+  <div className={`absolute ${isMobile ? 'top-2 left-2 right-2' : 'top-4 right-4'} bg-map-card rounded-lg shadow-lg p-3 ${isMobile ? 'max-w-none' : 'max-w-xs'} z-[999] border border-map-card-border`}>
+    {selectedPin && !showPinDetails && (
+      <div className="border-b border-map-card-border pb-3 mb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div 
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: getStatusColor(selectedPin.status) }}
+            ></div>
+            <span className="text-xs text-map-text-primary font-medium truncate">
+              {selectedPin.name}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              onClick={() => setShowPinDetails(true)}
+              className="text-primary hover:text-primary/90 text-xs px-2 py-1 rounded hover:bg-primary/10 transition-colors"
+            >
+              Details
+            </button>
+            <button
+              onClick={() => setSelectedPin(null)}
+              className="p-1 hover:bg-muted rounded transition-colors"
+              aria-label="Clear selection"
+            >
+              <X className="w-3 h-3 text-map-text-secondary" />
+            </button>
+          </div>
         </div>
-        
-        {/* Selected Device Quick Info with Close Button */}
-        {selectedPin && !showPinDetails && (
-          <div className="border-t border-map-card-border pt-3 mb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <div 
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: getStatusColor(selectedPin.status) }}
-                ></div>
-                <span className="text-xs text-map-text-primary font-medium truncate">
-                  {selectedPin.name}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <button
-                  onClick={() => setShowPinDetails(true)}
-                  className="text-primary hover:text-primary/90 text-xs px-2 py-1 rounded hover:bg-primary/10 transition-colors"
-                >
-                  Details
-                </button>
-                <button
-                  onClick={() => setSelectedPin(null)}
-                  className="p-1 hover:bg-muted rounded transition-colors"
-                  aria-label="Clear selection"
-                >
-                  <X className="w-3 h-3 text-map-text-secondary" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Quick Route Controls */}
-        {routeInfo && !showRoutePanel && (
-          <div className="border-t border-map-card-border pt-3">
-            <div className={`flex items-center ${isMobile ? 'flex-col space-y-2' : 'justify-between'}`}>
-              <span className="text-xs text-map-text-secondary font-medium">Route Active</span>
-              <div className={`flex gap-2 ${isMobile ? 'w-full' : ''}`}>
-                <button
-                  onClick={() => setShowRoutePanel(true)}
-                  className={`text-primary hover:text-primary/90 text-xs px-3 py-1 rounded hover:bg-primary/10 transition-colors font-medium ${isMobile ? 'flex-1' : ''}`}
-                >
-                  View Details
-                </button>
-                <button
-                  onClick={clearRoute}
-                  className={`text-destructive hover:text-destructive/90 text-xs px-3 py-1 rounded hover:bg-destructive/10 transition-colors font-medium ${isMobile ? 'flex-1' : ''}`}
-                >
-                  Clear Route
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+    )}
+    
+    {/* Quick Route Controls */}
+    {routeInfo && !showRoutePanel && (
+      <div className="border-t border-map-card-border pt-3">
+        <div className={`flex items-center ${isMobile ? 'flex-col space-y-2' : 'justify-between'}`}>
+          <span className="text-xs text-map-text-secondary font-medium">Route Active</span>
+          <div className={`flex gap-2 ${isMobile ? 'w-full' : ''}`}>
+            <button
+              onClick={() => setShowRoutePanel(true)}
+              className={`text-primary hover:text-primary/90 text-xs px-3 py-1 rounded hover:bg-primary/10 transition-colors font-medium ${isMobile ? 'flex-1' : ''}`}
+            >
+              View Details
+            </button>
+            <button
+              onClick={clearRoute}
+              className={`text-destructive hover:text-destructive/90 text-xs px-3 py-1 rounded hover:bg-destructive/10 transition-colors font-medium ${isMobile ? 'flex-1' : ''}`}
+            >
+              Clear Route
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+) : null}
+
+{/* GPS Status Indicator - Bottom Right Dot Only */}
+{userLocation && (
+  <div className="fixed bottom-4 right-4 z-[999] group">
+    <button 
+      className="w-4 h-4 bg-map-safe rounded-full animate-pulse shadow-lg border-2 border-white hover:scale-110 transition-transform"
+      onClick={() => {}}
+    >
+    </button>
+    <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-map-card border border-map-card-border rounded text-xs text-map-text-primary shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+      GPS Enabled
     </div>
+  </div>
+)}
+</div>
   );
 }
 
-// Default props for testing
-MapView.defaultProps = {
-  filters: {
-    safe: true,
-    warning: true,
-    alert: true,
-    offline: true,
-    maintenance: true,
-    sensorNode: true,
-    camera: true,
-    gateway: true,
-    states: [],
-    districts: [],
-    categories: []
-  }
-};
