@@ -26,30 +26,39 @@ export default function MapLegend() {
 
   return (
     <div className={`
-      ${isMobile ? 'fixed top-16 right-2 z-50' : 'relative'}
-      ${isOpen ? 'w-64' : 'w-12'}
+      ${isMobile ? 'fixed top-40 right-2 z-50' : 'relative'}
+      ${isOpen ? 'w-64' : 'w-10'}
       bg-map-card border border-map-card-border rounded-lg transition-all duration-300 overflow-hidden
       ${isMobile ? 'shadow-xl max-w-[calc(100vw-1rem)]' : ''}
     `}>
       {/* Toggle Button - Always visible */}
-      <div 
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50 transition-colors"
-        onClick={toggleOpen}
-      >
-        {/* Title - only show when open or on desktop */}
-        {(isOpen || !isMobile) && (
-          <h3 className={`text-map-text-primary font-semibold transition-opacity duration-300 ${
-            isOpen ? 'opacity-100 text-sm sm:text-base' : 'opacity-0'
-          }`}>
-            Map Legend
-          </h3>
-        )}
-        
-        {/* Toggle button */}
-        <button className="text-map-text-primary hover:text-map-text-secondary transition-all duration-300 flex-shrink-0">
-          {isOpen ? <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />}
-        </button>
-      </div>
+    <div
+  className="
+    flex items-center justify-between 
+    p-3 cursor-pointer hover:bg-muted/50 transition-colors
+    mt-4 sm:mt-0   /* pushes it down only on mobile */
+  "
+  onClick={toggleOpen}
+>
+  {(isOpen || !isMobile) && (
+    <h3
+      className={`text-map-text-primary font-semibold transition-opacity duration-300 ${
+        isOpen ? 'opacity-100 text-sm sm:text-base' : 'opacity-0'
+      }`}
+    >
+      Map Legend
+    </h3>
+  )}
+
+  <button className="text-map-text-primary hover:text-map-text-secondary transition-all duration-300 flex-shrink-0">
+    {isOpen ? (
+      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+    ) : (
+      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+    )}
+  </button>
+</div>
+
       
       {/* Content - slides from right */}
       <div 

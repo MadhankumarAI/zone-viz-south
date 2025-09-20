@@ -99,17 +99,22 @@ export default function MapSidebar({ isCollapsed, onToggleCollapse, filters, onF
       <>
         {/* Mobile Filter Toggle Button */}
         <button
-          onClick={() => setShowMobileFilters(true)}
-          className="fixed top-2 left-2 z-40 bg-map-card border border-map-card-border rounded-lg p-3 shadow-lg flex items-center gap-2"
-        >
-          <Menu className="w-4 h-4 text-map-text-primary" />
-          <span className="text-sm text-map-text-primary font-medium">Filters</span>
-          {getActiveFilterCount() > 0 && (
-            <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
-              {getActiveFilterCount()}
-            </span>
-          )}
-        </button>
+  onClick={() => setShowMobileFilters(true)}
+  className="
+    fixed bottom-4 left-4 z-40
+    bg-map-card border border-map-card-border rounded-lg p-3 shadow-lg flex items-center gap-2
+    md:top-2 md:left-2 md:bottom-auto  /* go back to top-left on md+ screens */
+  "
+>
+  <Menu className="w-4 h-4 text-map-text-primary" />
+  <span className="text-sm text-map-text-primary font-medium">Filters</span>
+  {getActiveFilterCount() > 0 && (
+    <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
+      {getActiveFilterCount()}
+    </span>
+  )}
+</button>
+
 
         {/* Mobile Filter Panel */}
         {showMobileFilters && (
