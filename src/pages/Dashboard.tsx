@@ -11,7 +11,7 @@ export function Dashboard() {
   const navigate=useNavigate()
   useEffect(() => {
     // Fetch main device info ONCE
-    fetch("http://localhost:8000/api/dashboard/device")
+    fetch("https://devices-hb9u.onrender.com/devices/CAM-002")
       .then((res) => res.json())
       .then((data) => {
         setVoltage(data.voltage !== undefined ? String(data.voltage) : "--");

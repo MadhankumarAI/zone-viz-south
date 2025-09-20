@@ -141,7 +141,7 @@ export function AlertsFeed() {
                     <Clock className="w-4 h-4" />
                     {alert.timestamp}
                   </div>
-                  <div>Device: <span className="text-sentinel-text">{alert.device}</span></div>
+                  <div>Device: CAM-002<span className="text-sentinel-text">{alert.device}</span></div>
                   <div>Location: <span className="text-sentinel-text">{alert.location}</span></div>
                 </div>
               </div>
