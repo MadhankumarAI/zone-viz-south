@@ -1,7 +1,8 @@
-import { useState } from "react";
+
 import { AlertTriangle, CheckCircle, Clock, Eye, MoreVertical, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 
 const alerts = [
   {
@@ -76,6 +77,16 @@ const getStatusBadge = (status: string) => {
 };
 
 export function AlertsFeed() {
+
+
+    const [alerts, setAlerts] = useState<any[]>([]);
+    useEffect(() => {
+        
+          fetch("http://localhost:8000/api/alerts?device_id=CAM-002")
+          .then((res) => res.json())
+          .then((data) => setAlerts(data))
+          .catch(() => setAlerts([]));
+      }, []);
   const [sortBy, setSortBy] = useState("timestamp");
 
   return (
