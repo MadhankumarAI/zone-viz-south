@@ -131,7 +131,7 @@ export default function Map() {
             </div>
           </div>
 
-          {/* Selected Pin Info */}
+          {/* Selected Pin Info
           {selectedPin && (
             <div className="bg-map-card border border-map-card-border rounded-lg p-4">
               <h3 className="text-map-text-primary font-semibold mb-2">Selected Device</h3>
@@ -168,7 +168,7 @@ export default function Map() {
                 )}
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
