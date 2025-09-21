@@ -7,6 +7,21 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+def safe_json_convert(obj):
+    """Convert numpy types to JSON-serializable Python types"""
+    if isinstance(obj, (np.integer, np.signedinteger)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, (np.bool_, np.bool8)):
+        return bool(obj)
+    elif isinstance(obj, np.string_):
+        return str(obj)
+    else:
+        return obj
+
 class ModelLoader:
     def __init__(self, model_path='model/model.joblib'):
         self.model_path = model_path
@@ -143,13 +158,13 @@ class ModelLoader:
             logger.error(f"Error preparing feature vector: {e}")
             return {}
     
-    def classify(self, features, threshold=0.25):
+    def classify(self, features, threshold=0.08):
         """
         Classify the record as legal or illegal based on probability threshold
         
         Args:
             features: Dictionary with feature values
-            threshold: Probability threshold for classification (default: 0.25)
+            threshold: Probability threshold for classification (default: 0.08, optimized for Kerala data)
         
         Returns:
             tuple: (classification, probability)
@@ -221,8 +236,11 @@ class ModelLoader:
                 if len(features) != len(self.model.feature_importances_):
                     logger.warning(f"Feature count mismatch: expected {len(features)}, got {len(self.model.feature_importances_)}")
                     return {}
-                    
-                importance_dict = dict(zip(features, self.model.feature_importances_))
+                
+                # Convert numpy types to JSON-serializable types
+                importance_values = [safe_json_convert(val) for val in self.model.feature_importances_]
+                importance_dict = dict(zip(features, importance_values))
+                
                 # Sort by importance
                 sorted_importance = dict(sorted(importance_dict.items(), 
                                                key=lambda x: x[1], reverse=True))
@@ -249,16 +267,22 @@ class ModelLoader:
                 'feature_count': len(self.get_required_features())
             }
             
-            # Add XGBoost-specific info if available
+            # Add XGBoost-specific info if available with JSON serialization safety
             try:
                 if hasattr(self.model, 'n_estimators'):
-                    info['n_estimators'] = self.model.n_estimators
+                    info['n_estimators'] = safe_json_convert(self.model.n_estimators)
                 if hasattr(self.model, 'max_depth'):
-                    info['max_depth'] = self.model.max_depth
+                    info['max_depth'] = safe_json_convert(self.model.max_depth) if self.model.max_depth is not None else None
                 if hasattr(self.model, 'learning_rate'):
-                    info['learning_rate'] = self.model.learning_rate
+                    info['learning_rate'] = safe_json_convert(self.model.learning_rate)
+                if hasattr(self.model, 'random_state'):
+                    info['random_state'] = safe_json_convert(self.model.random_state) if self.model.random_state is not None else None
+                if hasattr(self.model, 'subsample'):
+                    info['subsample'] = safe_json_convert(self.model.subsample)
+                if hasattr(self.model, 'colsample_bytree'):
+                    info['colsample_bytree'] = safe_json_convert(self.model.colsample_bytree)
             except Exception as e:
-                logger.warning(f"Could not get XGBoost parameters: {e}")
+                logger.warning(f"Could not get model parameters: {e}")
                 
             return info
             

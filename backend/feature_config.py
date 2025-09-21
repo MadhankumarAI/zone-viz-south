@@ -82,23 +82,23 @@ TIMESTAMP_DUMMIES = [
     'timestamp_2024-12-01'
 ]
 
-# Feature data types and ranges (for validation)
+# Feature data types and ranges (for validation) - Updated with realistic power grid values
 FEATURE_SPECS = {
-    'latitude': {'type': 'float', 'min': 6.0, 'max': 37.0},  # India bounds
-    'longitude': {'type': 'float', 'min': 68.0, 'max': 97.0},  # India bounds
-    'households': {'type': 'int', 'min': 1, 'max': 10000},
-    'distance_to_substation_km': {'type': 'float', 'min': 0.1, 'max': 50.0},
+    'latitude': {'type': 'float', 'min': 8.0, 'max': 13.0},     # Kerala bounds specifically
+    'longitude': {'type': 'float', 'min': 74.5, 'max': 77.5},   # Kerala bounds specifically
+    'households': {'type': 'int', 'min': 15, 'max': 500},       # Realistic household count per area
+    'distance_to_substation_km': {'type': 'float', 'min': 0.5, 'max': 25.0},  # Rural areas can be far
     'local_incident_reports': {'type': 'int', 'min': 0, 'max': 1},  # Boolean as int
-    'year': {'type': 'int', 'min': 2020, 'max': 2030},
+    'year': {'type': 'int', 'min': 2023, 'max': 2025},         # Current year range
     'month': {'type': 'int', 'min': 1, 'max': 12},
-    'expected_consumption_kwh': {'type': 'float', 'min': 100, 'max': 100000},
-    'voltage_reading_v': {'type': 'float', 'min': 180, 'max': 250},
-    'current_reading_a': {'type': 'float', 'min': 1, 'max': 500},
-    'power_factor': {'type': 'float', 'min': 0.5, 'max': 1.0},
-    'load_factor': {'type': 'float', 'min': 0.1, 'max': 1.0},
-    'is_summer': {'type': 'int', 'min': 0, 'max': 1},  # Boolean as int
-    'is_monsoon': {'type': 'int', 'min': 0, 'max': 1},  # Boolean as int
-    'is_winter': {'type': 'int', 'min': 0, 'max': 1}   # Boolean as int
+    'expected_consumption_kwh': {'type': 'float', 'min': 100, 'max': 100000},   # Monthly consumption
+    'voltage_reading_v': {'type': 'float', 'min': 180, 'max': 250},  # Standard voltage range
+    'current_reading_a': {'type': 'float', 'min': 1, 'max': 500},    # Current range
+    'power_factor': {'type': 'float', 'min': 0.5, 'max': 1.0},      # Power factor range
+    'load_factor': {'type': 'float', 'min': 0.1, 'max': 1.0},       # Load factor range
+    'is_summer': {'type': 'int', 'min': 0, 'max': 1},               # Boolean as int
+    'is_monsoon': {'type': 'int', 'min': 0, 'max': 1},              # Boolean as int
+    'is_winter': {'type': 'int', 'min': 0, 'max': 1}                # Boolean as int
 }
 
 # Sample data row (matching your provided example)
