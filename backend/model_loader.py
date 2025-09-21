@@ -129,17 +129,24 @@ class ModelLoader:
     def prepare_feature_vector(self, features):
         """Prepare feature vector in the exact order used by the model"""
         try:
-            # Create timestamp dummies
-            timestamp_dummies = self.create_timestamp_dummies(features.get('timestamp', datetime.now()))
+            # Create timestamp dummies if timestamp is provided
+            if 'timestamp' in features:
+                timestamp_dummies = self.create_timestamp_dummies(features['timestamp'])
+            else:
+                # Use existing timestamp dummies from features
+                timestamp_dummies = {}
+                for key in features:
+                    if key.startswith('timestamp_'):
+                        timestamp_dummies[key] = features[key]
             
-            # Create feature vector in exact order
+            # Create feature vector in exact training order (38 features)
             feature_vector = {
                 'latitude': features.get('latitude', 0.0),
                 'longitude': features.get('longitude', 0.0),
                 'households': features.get('households', 0),
                 'distance_to_substation_km': features.get('distance_to_substation_km', 0.0),
                 'local_incident_reports': int(features.get('local_incident_reports', 0)),
-                'year': features.get('year', 2023),
+                'year': features.get('year', 2024),
                 'month': features.get('month', 1),
                 'expected_consumption_kwh': features.get('expected_consumption_kwh', 0.0),
                 'voltage_reading_v': features.get('voltage_reading_v', 220.0),
