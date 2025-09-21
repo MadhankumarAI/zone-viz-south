@@ -1,64 +1,10 @@
-
 import { AlertTriangle, CheckCircle, Clock, Eye, MoreVertical, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 
-const alerts = [
-  {
-    id: "ALT-001",
-    severity: "critical",
-    title: "Unauthorized Access Detected",
-    description: "Motion detected in restricted area after hours",
-    timestamp: "2 minutes ago",
-    device: "CAM-005",
-    location: "Sector 7, Gate B",
-    status: "active"
-  },
-  {
-    id: "ALT-002", 
-    severity: "high",
-    title: "Equipment Malfunction",
-    description: "Sensor network offline in perimeter zone",
-    timestamp: "15 minutes ago",
-    device: "SENSOR-012",
-    location: "North Perimeter",
-    status: "investigating"
-  },
-  {
-    id: "ALT-003",
-    severity: "medium", 
-    title: "Environmental Alert",
-    description: "Temperature threshold exceeded in server room",
-    timestamp: "1 hour ago",
-    device: "TEMP-003",
-    location: "Data Center",
-    status: "active"
-  },
-  {
-    id: "ALT-004",
-    severity: "low",
-    title: "Maintenance Due",
-    description: "Scheduled maintenance required for backup generator",
-    timestamp: "3 hours ago", 
-    device: "GEN-001",
-    location: "Power Room",
-    status: "resolved"
-  },
-  {
-    id: "ALT-005",
-    severity: "critical",
-    title: "Security Breach",
-    description: "Multiple failed access attempts at main entrance",
-    timestamp: "4 hours ago",
-    device: "ACCESS-001",
-    location: "Main Entrance", 
-    status: "resolved"
-  }
-];
-
 const getSeverityColor = (severity: string) => {
-  switch (severity) {
+  switch (severity.toLowerCase()) {
     case "critical": return "text-red-500 bg-red-500/10 border-red-500/20";
     case "high": return "text-orange-500 bg-orange-500/10 border-orange-500/20";
     case "medium": return "text-yellow-500 bg-yellow-500/10 border-yellow-500/20";
@@ -68,7 +14,7 @@ const getSeverityColor = (severity: string) => {
 };
 
 const getStatusBadge = (status: string) => {
-  switch (status) {
+  switch (status.toLowerCase()) {
     case "active": return <Badge variant="destructive">Active</Badge>;
     case "investigating": return <Badge variant="secondary">Investigating</Badge>;
     case "resolved": return <Badge variant="default">Resolved</Badge>;
@@ -76,18 +22,60 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-export function AlertsFeed() {
-
-
-    const [alerts, setAlerts] = useState<any[]>([]);
-    useEffect(() => {
-        
-          fetch("http://localhost:8000/api/alerts?device_id=CAM-002")
-          .then((res) => res.json())
-          .then((data) => setAlerts(data))
-          .catch(() => setAlerts([]));
-      }, []);
+export function AlertsFeed({ selectedFilters }) {
+  const [allAlerts, setAllAlerts] = useState([]);
+  const [filteredAlerts, setFilteredAlerts] = useState([]);
   const [sortBy, setSortBy] = useState("timestamp");
+
+  // Fetch all alerts once
+  useEffect(() => {
+    fetch("https://alerts-ib70.onrender.com/alerts/?device_id=CAM-002")
+      .then((res) => res.json())
+      .then((data) => {
+        setAllAlerts(data);
+        setFilteredAlerts(data);
+      })
+      .catch(() => {
+        setAllAlerts([]);
+        setFilteredAlerts([]);
+      });
+  }, []);
+
+  // Filter alerts whenever selectedFilters change
+  useEffect(() => {
+    let filtered = [...allAlerts];
+
+    // Apply severity filter
+    if (selectedFilters.severity.length > 0) {
+      filtered = filtered.filter(alert => 
+        selectedFilters.severity.includes(alert.severity?.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (selectedFilters.status.length > 0) {
+      filtered = filtered.filter(alert => 
+        selectedFilters.status.includes(alert.status?.toLowerCase())
+      );
+    }
+
+    // Apply category filter (assuming your API has a 'type' field)
+    if (selectedFilters.category.length > 0) {
+      filtered = filtered.filter(alert => {
+        const alertType = alert.type?.toLowerCase();
+        return selectedFilters.category.some(category => {
+          // Map categories to your API fields
+          if (category === 'security' && (alertType?.includes('security') || alertType?.includes('breach'))) return true;
+          if (category === 'equipment' && (alertType?.includes('equipment') || alertType?.includes('malfunction'))) return true;
+          if (category === 'environmental' && alertType?.includes('environmental')) return true;
+          if (category === 'system' && alertType?.includes('system')) return true;
+          return false;
+        });
+      });
+    }
+
+    setFilteredAlerts(filtered);
+  }, [selectedFilters, allAlerts]);
 
   return (
     <div className="flex-1 p-6">
@@ -116,7 +104,7 @@ export function AlertsFeed() {
 
       {/* Alerts List */}
       <div className="space-y-4">
-        {alerts.map((alert) => (
+        {filteredAlerts.map((alert) => (
           <div key={alert.id} className="bg-sentinel-container border border-sentinel-border rounded-lg p-6 hover:border-sentinel-green transition-colors">
             <div className="flex items-start justify-between">
               {/* Alert Content */}
@@ -141,7 +129,7 @@ export function AlertsFeed() {
                     <Clock className="w-4 h-4" />
                     {alert.timestamp}
                   </div>
-                  <div>Device: CAM-002<span className="text-sentinel-text">{alert.device}</span></div>
+                  <div>Device: <span className="text-sentinel-text">{alert.device_id || 'CAM-002'}</span></div>
                   <div>Location: <span className="text-sentinel-text">{alert.location}</span></div>
                 </div>
               </div>
@@ -164,7 +152,7 @@ export function AlertsFeed() {
       {/* Pagination */}
       <div className="flex items-center justify-between mt-8 pt-6 border-t border-sentinel-border">
         <span className="text-sm text-sentinel-muted">
-          Showing 5 of 58 alerts
+          Showing {filteredAlerts.length} of {allAlerts.length} alerts
         </span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="bg-sentinel-container border-sentinel-border text-sentinel-text hover:bg-sentinel-green hover:text-white">

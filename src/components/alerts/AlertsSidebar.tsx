@@ -23,12 +23,23 @@ const filterOptions = {
   ]
 };
 
-export function AlertsSidebar() {
-  const [selectedFilters, setSelectedFilters] = useState({
-    severity: [],
-    status: [],
-    category: []
-  });
+export function AlertsSidebar({ selectedFilters, setSelectedFilters }) {
+  const handleFilterChange = (filterType, value, checked) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [filterType]: checked 
+        ? [...prev[filterType], value]
+        : prev[filterType].filter(item => item !== value)
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setSelectedFilters({
+      severity: [],
+      status: [],
+      category: []
+    });
+  };
 
   return (
     <div className="w-80 p-6 bg-sentinel-bg border-r border-sentinel-border">
@@ -47,7 +58,11 @@ export function AlertsSidebar() {
           {filterOptions.severity.map((option) => (
             <div key={option.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Checkbox id={option.id} />
+                <Checkbox 
+                  id={option.id} 
+                  checked={selectedFilters.severity.includes(option.id)}
+                  onCheckedChange={(checked) => handleFilterChange('severity', option.id, checked)}
+                />
                 <label htmlFor={option.id} className={`text-sm cursor-pointer ${option.color}`}>
                   {option.label}
                 </label>
@@ -68,7 +83,11 @@ export function AlertsSidebar() {
           {filterOptions.status.map((option) => (
             <div key={option.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Checkbox id={option.id} />
+                <Checkbox 
+                  id={option.id} 
+                  checked={selectedFilters.status.includes(option.id)}
+                  onCheckedChange={(checked) => handleFilterChange('status', option.id, checked)}
+                />
                 <label htmlFor={option.id} className="text-sm text-sentinel-text cursor-pointer">
                   {option.label}
                 </label>
@@ -89,7 +108,11 @@ export function AlertsSidebar() {
           {filterOptions.category.map((option) => (
             <div key={option.id} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Checkbox id={option.id} />
+                <Checkbox 
+                  id={option.id} 
+                  checked={selectedFilters.category.includes(option.id)}
+                  onCheckedChange={(checked) => handleFilterChange('category', option.id, checked)}
+                />
                 <label htmlFor={option.id} className="text-sm text-sentinel-text cursor-pointer">
                   {option.label}
                 </label>
@@ -124,7 +147,11 @@ export function AlertsSidebar() {
         <Button variant="sentinel" className="w-full">
           Apply Filters
         </Button>
-        <Button variant="outline" className="w-full bg-sentinel-container border-sentinel-border text-sentinel-text hover:bg-sentinel-green hover:text-white">
+        <Button 
+          variant="outline" 
+          className="w-full bg-sentinel-container border-sentinel-border text-sentinel-text hover:bg-sentinel-green hover:text-white"
+          onClick={clearAllFilters}
+        >
           Clear All
         </Button>
       </div>
