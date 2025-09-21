@@ -1,11 +1,8 @@
-
 import MapLegend from "../components/MapLegend";
 import MapSidebar from "../components/MapSidebar";
 import MapView, { southIndiaLocations } from "../components/MapView";
 
-
 import { useState, useEffect } from "react";
-
 
 interface Filters {
   // Status filters
@@ -87,7 +84,7 @@ export default function Map() {
   // Mobile Layout
   if (isMobile) {
     return (
-      <div className="w-full h-screen bg-map-bg overflow-hidden">
+      <div className="w-full min-h-screen bg-map-bg flex flex-col">
         {/* Custom CSS for mobile responsiveness */}
         <style jsx>{`
           :root {
@@ -138,10 +135,30 @@ export default function Map() {
             --sidebar-border: 0 0% 89.8%;
             --sidebar-ring: 142 76% 26%;
           }
+
+          /* Ensure leaflet map is responsive */
+          .leaflet-container {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 300px !important;
+          }
+
+          /* Mobile responsive adjustments */
+          @media (max-width: 767px) {
+            .leaflet-control-zoom {
+              margin-left: 10px !important;
+              margin-top: 10px !important;
+            }
+            
+            .leaflet-control-attribution {
+              font-size: 10px !important;
+              background: rgba(255, 255, 255, 0.8) !important;
+            }
+          }
         `}</style>
 
-        {/* Mobile Stats Bar - Collapsible */}
-        <div className="relative z-30">
+        {/* Mobile Stats Bar - Fixed at top */}
+        <div className="shrink-0 z-30">
           <div className="bg-map-card border-b border-map-card-border p-2">
             <div className="flex justify-between items-center gap-2">
               {/* Compact Stats */}
@@ -165,33 +182,45 @@ export default function Map() {
           </div>
         </div>
 
-        {/* Full Screen Map */}
-        <div className="relative h-full">
-          <MapView
-            onPinClick={handlePinClick}
+        {/* Main content area - grows to fill available space */}
+        <div className="flex-1 flex flex-col min-h-0">
+          {/* Map container - takes remaining space */}
+          <div className="flex-1 relative min-h-0">
+            <MapView
+              onPinClick={handlePinClick}
+              filters={filters}
+            />
+          </div>
+
+          {/* Mobile Map Legend - positioned over map */}
+          <div className="absolute top-20 right-2 z-40">
+            <MapLegend />
+          </div>
+        </div>
+
+        {/* Mobile Sidebar - renders as overlay with proper spacing */}
+        <div className="relative z-50">
+          <MapSidebar
+            isCollapsed={isCollapsed}
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
             filters={filters}
+            onFilterChange={setFilters}
           />
         </div>
 
-        {/* Mobile Sidebar (renders as overlay) */}
-        <MapSidebar
-          isCollapsed={isCollapsed}
-          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-          filters={filters}
-          onFilterChange={setFilters}
-        />
-
-        {/* Mobile Map Legend (fixed position) */}
-        <div className="absolute top-16 right-2 z-40">
-          <MapLegend />
-        </div>
+        {/* Mobile Footer - Always at bottom */}
+        <footer className="shrink-0 bg-map-card border-t border-map-card-border p-2 z-20">
+          <div className="text-center text-xs text-map-text-secondary">
+            © 2024 SafeMap. All rights reserved.
+          </div>
+        </footer>
       </div>
     );
   }
 
-  // Desktop Layout (original)
+  // Desktop Layout (improved)
   return (
-    <div className="w-full h-screen bg-map-bg">
+    <div className="w-full min-h-screen bg-map-bg flex flex-col">
       {/* Custom CSS for desktop */}
       <style jsx>{`
         :root {
@@ -242,77 +271,130 @@ export default function Map() {
           --sidebar-border: 0 0% 89.8%;
           --sidebar-ring: 142 76% 26%;
         }
+
+        /* Ensure leaflet map is responsive */
+        .leaflet-container {
+          width: 100% !important;
+          height: 100% !important;
+          min-height: 400px !important;
+        }
+
+        /* Desktop responsive adjustments */
+        @media (min-width: 768px) {
+          .leaflet-control-zoom {
+            margin-left: 10px !important;
+            margin-top: 10px !important;
+          }
+        }
+
+        /* Ensure proper grid layout */
+        .desktop-grid {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          grid-template-rows: auto 1fr;
+          gap: 1rem;
+          height: 100%;
+        }
+        
+        .sidebar-area {
+          grid-column: 1;
+          grid-row: 1 / 3;
+        }
+        
+        .stats-area {
+          grid-column: 2;
+          grid-row: 1;
+        }
+        
+        .map-area {
+          grid-column: 2;
+          grid-row: 2;
+          min-height: 0;
+        }
       `}</style>
 
-      <div className="flex h-full gap-4 p-4">
-        {/* Desktop Sidebar */}
-        <div className="shrink-0">
-          <MapSidebar
-            isCollapsed={isCollapsed}
-            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-            filters={filters}
-            onFilterChange={setFilters}
-          />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col gap-4 min-w-0">
-          {/* Desktop Stats Bar */}
-          <div className="flex gap-4">
-            <div className="bg-map-card border border-map-card-border rounded-lg p-4 flex-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-map-text-secondary text-sm">Total Devices</p>
-                  <p className="text-map-text-primary text-2xl font-bold">{totalDevices}</p>
-                </div>
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                  <div className="w-4 h-4 bg-primary rounded-full"></div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-map-card border border-map-card-border rounded-lg p-4 flex-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-map-text-secondary text-sm">Active Devices</p>
-                  <p className="text-map-text-primary text-2xl font-bold">{activeDevices}</p>
-                </div>
-                <div className="w-10 h-10 bg-map-safe/10 rounded-full flex items-center justify-center">
-                  <div className="w-4 h-4 bg-map-safe rounded-full"></div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-map-card border border-map-card-border rounded-lg p-4 flex-1">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-map-text-secondary text-sm">Alert Devices</p>
-                  <p className="text-map-text-primary text-2xl font-bold">{alertDevices}</p>
-                </div>
-                <div className="w-10 h-10 bg-map-alert/10 rounded-full flex items-center justify-center">
-                  <div className="w-4 h-4 bg-map-alert rounded-full"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Map and Legend Container */}
-          <div className="flex-1 flex gap-4 min-h-0">
-            {/* Map View */}
-            <div className="flex-1 min-w-0 relative">
-              <MapView
-                onPinClick={handlePinClick}
+      {/* Main content container - grows to fill screen */}
+      <main className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 p-4 min-h-0">
+          <div className="desktop-grid h-full">
+            {/* Desktop Sidebar */}
+            <div className="sidebar-area">
+              <MapSidebar
+                isCollapsed={isCollapsed}
+                onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
                 filters={filters}
+                onFilterChange={setFilters}
               />
             </div>
 
-            {/* Desktop Map Legend */}
-            <div className="shrink-0">
-              <MapLegend />
+            {/* Desktop Stats Bar */}
+            <div className="stats-area">
+              <div className="flex gap-4 h-full">
+                <div className="bg-map-card border border-map-card-border rounded-lg p-4 flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-map-text-secondary text-sm">Total Devices</p>
+                      <p className="text-map-text-primary text-2xl font-bold">{totalDevices}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-primary rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-map-card border border-map-card-border rounded-lg p-4 flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-map-text-secondary text-sm">Active Devices</p>
+                      <p className="text-map-text-primary text-2xl font-bold">{activeDevices}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-map-safe/10 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-map-safe rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-map-card border border-map-card-border rounded-lg p-4 flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-map-text-secondary text-sm">Alert Devices</p>
+                      <p className="text-map-text-primary text-2xl font-bold">{alertDevices}</p>
+                    </div>
+                    <div className="w-10 h-10 bg-map-alert/10 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-map-alert rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Map and Legend Container */}
+            <div className="map-area">
+              <div className="flex gap-4 h-full">
+                {/* Map View */}
+                <div className="flex-1 min-w-0 relative">
+                  <MapView
+                    onPinClick={handlePinClick}
+                    filters={filters}
+                  />
+                </div>
+
+                {/* Desktop Map Legend */}
+                <div className="shrink-0">
+                  <MapLegend />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* Desktop Footer - Always at bottom */}
+      <footer className="shrink-0 bg-map-card border-t border-map-card-border p-4">
+        <div className="text-center text-sm text-map-text-secondary">
+          © 2024 SafeMap. All rights reserved. | Privacy Policy | Terms of Service
+        </div>
+      </footer>
     </div>
   );
 }
