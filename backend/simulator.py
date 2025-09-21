@@ -334,7 +334,7 @@ class PowerGridSimulator:
     def classify_record(self, data_record: Dict) -> tuple:
         """Classify a data record using the ML model"""
         try:
-            # Prepare features for the model (only the features used in training)
+            # Prepare features for the model (only the exact 38 features used in training)
             features = {
                 'latitude': data_record['latitude'],
                 'longitude': data_record['longitude'],
