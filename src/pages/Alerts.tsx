@@ -7,7 +7,7 @@ export function Alerts() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <DashboardHeader />
+      {/*<DashboardHeader />*/}
 
       {/* Main Layout - Responsive */}
       <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
