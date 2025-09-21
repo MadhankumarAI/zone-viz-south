@@ -22,128 +22,139 @@ class PowerGridSimulator:
         # Initialize locations if not exists
         self.initialize_locations()
         
-        # Configuration - Lower threshold to catch more illegal cases
-        self.classification_threshold = float(os.getenv('CLASSIFICATION_THRESHOLD', 0.15))
+        # Configuration - Much lower threshold to catch more illegal cases matching Kerala patterns
+        self.classification_threshold = float(os.getenv('CLASSIFICATION_THRESHOLD', 0.08))
         
     def initialize_locations(self):
-        """Initialize power grid locations in the database"""
+        """Initialize power grid locations in the database matching your Kerala dataset"""
         try:
             # Check if locations already exist
             if self.locations_collection.count_documents({}) > 0:
                 logger.info("Locations already initialized")
                 return
             
-            # Sample locations data matching your dataset structure
+            # Kerala locations matching your actual dataset structure
             locations_data = [
                 {
-                    'area_id': 'KL_0001',
-                    'district': 'Kozhikode',
-                    'city': 'Kozhikode',
-                    'area_name': 'Kallathara North',
-                    'latitude': 11.322288,
-                    'longitude': 76.231557,
-                    'area_type': 'semi-urban',
-                    'households': 35,
-                    'distance_to_substation_km': 3.56
-                },
-                {
-                    'area_id': 'KL_0002',
-                    'district': 'Kochi',
-                    'city': 'Kochi',
-                    'area_name': 'Marine Drive',
-                    'latitude': 9.9312,
-                    'longitude': 76.2673,
-                    'area_type': 'urban',
-                    'households': 120,
-                    'distance_to_substation_km': 1.8
-                },
-                {
-                    'area_id': 'TN_0001',
-                    'district': 'Chennai',
-                    'city': 'Chennai',
-                    'area_name': 'Anna Nagar',
-                    'latitude': 13.0850,
-                    'longitude': 80.2101,
-                    'area_type': 'urban',
-                    'households': 200,
-                    'distance_to_substation_km': 2.1
-                },
-                {
-                    'area_id': 'KA_0001',
-                    'district': 'Bangalore',
-                    'city': 'Bangalore',
-                    'area_name': 'Electronic City',
-                    'latitude': 12.8456,
-                    'longitude': 77.6603,
-                    'area_type': 'urban',
-                    'households': 180,
-                    'distance_to_substation_km': 4.2
-                },
-                {
-                    'area_id': 'MH_0001',
-                    'district': 'Mumbai',
-                    'city': 'Mumbai',
-                    'area_name': 'Bandra East',
-                    'latitude': 19.0544,
-                    'longitude': 72.8406,
-                    'area_type': 'urban',
-                    'households': 300,
-                    'distance_to_substation_km': 2.7
-                },
-                {
-                    'area_id': 'TN_0002',
-                    'district': 'Coimbatore',
-                    'city': 'Coimbatore', 
-                    'area_name': 'Peelamedu',
-                    'latitude': 11.0168,
-                    'longitude': 76.9558,
-                    'area_type': 'semi-urban',
-                    'households': 85,
-                    'distance_to_substation_km': 3.2
-                },
-                {
-                    'area_id': 'KL_0003',
-                    'district': 'Thiruvananthapuram',
-                    'city': 'Thiruvananthapuram',
-                    'area_name': 'Technopark',
-                    'latitude': 8.5569,
-                    'longitude': 76.8800,
-                    'area_type': 'urban',
-                    'households': 150,
-                    'distance_to_substation_km': 5.1
-                },
-                {
-                    'area_id': 'KA_0002',
-                    'district': 'Mysore',
-                    'city': 'Mysore',
-                    'area_name': 'Vijayanagar',
-                    'latitude': 12.3375,
-                    'longitude': 76.6394,
+                    'area_id': 'KL_0163',
+                    'district': 'Alappuzha',
+                    'city': 'Kayamkulam',
+                    'area_name': 'Thoduvayal',
+                    'latitude': 9.540577,
+                    'longitude': 76.314937,
                     'area_type': 'rural',
-                    'households': 45,
-                    'distance_to_substation_km': 6.8
+                    'households': 122,
+                    'distance_to_substation_km': 15.13
                 },
                 {
-                    'area_id': 'AP_0001',
-                    'district': 'Hyderabad',
-                    'city': 'Hyderabad',
-                    'area_name': 'HITEC City',
-                    'latitude': 17.4485,
-                    'longitude': 78.3908,
-                    'area_type': 'urban',
-                    'households': 250,
-                    'distance_to_substation_km': 3.9
+                    'area_id': 'KL_0164',
+                    'district': 'Alappuzha',
+                    'city': 'Kayamkulam',
+                    'area_name': 'Panayam',
+                    'latitude': 9.541234,
+                    'longitude': 76.315432,
+                    'area_type': 'rural',
+                    'households': 98,
+                    'distance_to_substation_km': 18.45
                 },
                 {
-                    'area_id': 'GJ_0001',
-                    'district': 'Ahmedabad',
-                    'city': 'Ahmedabad',
-                    'area_name': 'Satellite',
-                    'latitude': 23.0225,
-                    'longitude': 72.5714,
-                    'area_type': 'urban',
-                    'households': 175,
-                    'distance_to_substation_km': 2.8
+                    'area_id': 'KL_0165',
+                    'district': 'Kollam',
+                    'city': 'Punalur',
+                    'area_name': 'Anchal',
+                    'latitude': 8.9876,
+                    'longitude': 76.7654,
+                    'area_type': 'rural',
+                    'households': 76,
+                    'distance_to_substation_km': 22.30
+                },
+                {
+                    'area_id': 'KL_0166',
+                    'district': 'Pathanamthitta',
+                    'city': 'Adoor',
+                    'area_name': 'Kozhencherry',
+                    'latitude': 9.2345,
+                    'longitude': 76.6789,
+                    'area_type': 'semi-urban',
+                    'households': 134,
+                    'distance_to_substation_km': 12.75
+                },
+                {
+                    'area_id': 'KL_0167',
+                    'district': 'Kottayam',
+                    'city': 'Changanassery',
+                    'area_name': 'Vakathanam',
+                    'latitude': 9.4567,
+                    'longitude': 76.5432,
+                    'area_type': 'rural',
+                    'households': 89,
+                    'distance_to_substation_km': 16.20
+                },
+                {
+                    'area_id': 'KL_0168',
+                    'district': 'Idukki',
+                    'city': 'Thodupuzha',
+                    'area_name': 'Muttom',
+                    'latitude': 9.8901,
+                    'longitude': 76.7123,
+                    'area_type': 'rural',
+                    'households': 52,
+                    'distance_to_substation_km': 28.90
+                },
+                {
+                    'area_id': 'KL_0169',
+                    'district': 'Ernakulam',
+                    'city': 'Aluva',
+                    'area_name': 'Perumbavoor',
+                    'latitude': 10.1234,
+                    'longitude': 76.4567,
+                    'area_type': 'semi-urban',
+                    'households': 167,
+                    'distance_to_substation_km': 8.45
+                },
+                {
+                    'area_id': 'KL_0170',
+                    'district': 'Thrissur',
+                    'city': 'Chalakudy',
+                    'area_name': 'Kodungallur',
+                    'latitude': 10.2987,
+                    'longitude': 76.1876,
+                    'area_type': 'rural',
+                    'households': 112,
+                    'distance_to_substation_km': 19.65
+                },
+                {
+                    'area_id': 'KL_0171',
+                    'district': 'Palakkad',
+                    'city': 'Ottappalam',
+                    'area_name': 'Shornur',
+                    'latitude': 10.7654,
+                    'longitude': 76.2109,
+                    'area_type': 'semi-urban',
+                    'households': 143,
+                    'distance_to_substation_km': 14.20
+                },
+                {
+                    'area_id': 'KL_0172',
+                    'district': 'Malappuram',
+                    'city': 'Manjeri',
+                    'area_name': 'Wandoor',
+                    'latitude': 11.1298,
+                    'longitude': 76.1234,
+                    'area_type': 'rural',
+                    'households': 87,
+                    'distance_to_substation_km': 21.85
+                },
+                {
+                    'area_id': 'KL_0173',
+                    'district': 'Kozhikode',
+                    'city': 'Vadakara',
+                    'area_name': 'Koyilandy',
+                    'latitude': 11.4321,
+                    'longitude': 75.7654,
+                    'area_type': 'rural',
+                    'households': 94,
+                    'distance_to_substation_km': 17.30
                 }
             ]
             
@@ -227,46 +238,58 @@ class PowerGridSimulator:
             # Local incident reports (10% chance normally)
             local_incident_reports = random.choice([0, 1]) if random.random() < 0.1 else 0
             
-            # Make certain areas more prone to illegal activity based on risk factors
-            area_illegal_probability = 0.3  # Base 30% probability
+            # Make certain areas more prone to illegal activity based on Kerala data patterns
+            area_illegal_probability = 0.25  # Base 25% probability
             
-            # Risk factor adjustments
+            # Risk factor adjustments based on Kerala power theft patterns
             if area_type == 'rural':
-                area_illegal_probability += 0.15  # Rural areas more prone
-            if distance_to_substation > 8.0:
-                area_illegal_probability += 0.1   # Far from substation
-            if households < 60:
-                area_illegal_probability += 0.08  # Smaller communities
+                area_illegal_probability += 0.20  # Rural areas much more prone in Kerala
+            if distance_to_substation > 10.0:
+                area_illegal_probability += 0.15  # Far from substation (Kerala rural)
+            if households > 100:
+                area_illegal_probability += 0.12  # Larger communities often have organized theft
             
             # Generate actual consumption and introduce anomalies
             actual_consumption_kwh = expected_consumption_kwh
             illegal_fence_suspected = False
             
             if random.random() < area_illegal_probability:
-                # Create fraud patterns
-                # 1. Under-consumption (theft/bypass)
-                if random.random() < 0.6:  # 60% are under-consumption cases
-                    actual_consumption_kwh *= random.uniform(0.4, 0.7)  # 30-60% reduction
-                    voltage_reading *= random.uniform(0.85, 0.95)       # Voltage drops
-                    power_factor *= random.uniform(0.6, 0.8)            # Poor power factor
-                    current_reading *= random.uniform(0.7, 0.9)         # Lower measured current
+                # Create fraud patterns based on Kerala power theft methods
+                fraud_type = random.choice(['bypass', 'meter_tamper', 'illegal_connection', 'fence_theft'])
                 
-                # 2. Over-consumption (illegal connections/fences)
-                else:  # 40% are over-consumption cases
-                    actual_consumption_kwh *= random.uniform(1.3, 1.8)  # 30-80% increase
-                    voltage_reading *= random.uniform(0.9, 0.97)        # Slight voltage drop
-                    current_reading *= random.uniform(1.2, 1.7)         # Higher current
-                    power_factor *= random.uniform(0.65, 0.85)          # Degraded power factor
+                if fraud_type == 'bypass':  # Most common in Kerala rural areas
+                    actual_consumption_kwh *= random.uniform(0.3, 0.6)  # Major reduction
+                    voltage_reading *= random.uniform(0.80, 0.92)       # Voltage drops
+                    power_factor *= random.uniform(0.55, 0.75)          # Poor power factor
+                    current_reading *= random.uniform(0.6, 0.85)        # Lower measured current
                 
-                # Increase incident reports for fraud cases
-                local_incident_reports = 1 if random.random() < 0.4 else local_incident_reports
-                illegal_fence_suspected = random.choice([True, False])
+                elif fraud_type == 'meter_tamper':  # Meter manipulation
+                    actual_consumption_kwh *= random.uniform(0.45, 0.75)
+                    voltage_reading *= random.uniform(0.88, 0.96)
+                    current_reading *= random.uniform(0.7, 0.9)
+                    power_factor *= random.uniform(0.65, 0.85)
                 
-                # Extreme anomaly cases (10% of fraud cases)
-                if random.random() < 0.1:
-                    voltage_reading = max(180, voltage_reading - random.uniform(15, 25))
-                    power_factor = min(power_factor, random.uniform(0.5, 0.65))
-                    current_reading *= random.uniform(1.5, 2.0)
+                elif fraud_type == 'illegal_connection':  # Unauthorized hookups
+                    actual_consumption_kwh *= random.uniform(1.4, 2.2)  # Higher consumption
+                    voltage_reading *= random.uniform(0.85, 0.94)       # Load causes voltage drop
+                    current_reading *= random.uniform(1.3, 1.9)         # Higher current
+                    power_factor *= random.uniform(0.60, 0.80)          # Poor power factor
+                
+                else:  # fence_theft - Agricultural area power theft
+                    actual_consumption_kwh *= random.uniform(1.2, 1.7)
+                    voltage_reading *= random.uniform(0.88, 0.95)
+                    current_reading *= random.uniform(1.1, 1.5)
+                    power_factor *= random.uniform(0.62, 0.82)
+                
+                # Increase incident reports for fraud cases (Kerala has more reporting)
+                local_incident_reports = 1 if random.random() < 0.6 else local_incident_reports
+                illegal_fence_suspected = True if fraud_type == 'fence_theft' else random.choice([True, False])
+                
+                # Extreme anomaly cases (15% of fraud cases in Kerala)
+                if random.random() < 0.15:
+                    voltage_reading = max(180, voltage_reading - random.uniform(20, 35))
+                    power_factor = min(power_factor, random.uniform(0.45, 0.65))
+                    current_reading *= random.uniform(1.5, 2.5)
             
             # Final range validation and clamping
             actual_consumption_kwh = max(100, min(100000, actual_consumption_kwh))

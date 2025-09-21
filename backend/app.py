@@ -328,7 +328,7 @@ def get_configuration():
             "simulation_running": backend.is_running,
             "window_duration_minutes": backend.window_duration_minutes,
             "data_generation_interval_seconds": int(os.getenv('DATA_GENERATION_INTERVAL', 5)),
-            "classification_threshold": float(os.getenv('CLASSIFICATION_THRESHOLD', 0.15)),
+            "classification_threshold": float(os.getenv('CLASSIFICATION_THRESHOLD', 0.08)),
             "model_loaded": backend.simulator.model_loader.model is not None if backend.simulator else False,
             "model_features": backend.model_loader.get_required_features() if backend.model_loader else [],
             "total_model_features": len(backend.model_loader.get_required_features()) if backend.model_loader else 0

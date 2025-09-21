@@ -158,13 +158,13 @@ class ModelLoader:
             logger.error(f"Error preparing feature vector: {e}")
             return {}
     
-    def classify(self, features, threshold=0.15):
+    def classify(self, features, threshold=0.08):
         """
         Classify the record as legal or illegal based on probability threshold
         
         Args:
             features: Dictionary with feature values
-            threshold: Probability threshold for classification (default: 0.15, lowered from 0.25)
+            threshold: Probability threshold for classification (default: 0.08, optimized for Kerala data)
         
         Returns:
             tuple: (classification, probability)
