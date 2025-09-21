@@ -11,7 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
-
+backend/res
+venv
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +23,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+__pycache__/
+*.py[cod]
+backend/test_commands.txt
+backend/test_api.py
+backend/command_desc.txt
