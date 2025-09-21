@@ -192,7 +192,7 @@ class MongoDBManager:
         """
         try:
             cutoff_time = datetime.now().replace(microsecond=0) - \
-                         datetime.timedelta(hours=hours)
+                         timedelta(hours=hours)
             
             pipeline = [
                 {
@@ -284,7 +284,7 @@ class MongoDBManager:
         """
         try:
             cutoff_time = datetime.now().replace(microsecond=0) - \
-                         datetime.timedelta(hours=hours)
+                         timedelta(hours=hours)
             
             pipeline = [
                 {

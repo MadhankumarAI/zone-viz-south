@@ -293,6 +293,32 @@ def set_generation_interval():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
+@app.route('/set-threshold', methods=['POST'])
+def set_classification_threshold():
+    """Set the classification threshold for illegal detection"""
+    try:
+        data = request.get_json()
+        threshold = float(data.get('threshold', 0.15))
+        
+        if threshold < 0 or threshold > 1:
+            return jsonify({"status": "error", "message": "Threshold must be between 0 and 1"})
+        
+        # Set environment variable for the threshold
+        os.environ['CLASSIFICATION_THRESHOLD'] = str(threshold)
+        
+        # Update the simulator threshold if it's running
+        if backend.simulator:
+            backend.simulator.classification_threshold = threshold
+        
+        logger.info(f"Classification threshold set to {threshold}")
+        return jsonify({
+            "status": "success", 
+            "message": f"Classification threshold set to {threshold}"
+        })
+        
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+
 @app.route('/get-config', methods=['GET'])
 def get_configuration():
     """Get current system configuration"""
@@ -302,7 +328,7 @@ def get_configuration():
             "simulation_running": backend.is_running,
             "window_duration_minutes": backend.window_duration_minutes,
             "data_generation_interval_seconds": int(os.getenv('DATA_GENERATION_INTERVAL', 5)),
-            "classification_threshold": float(os.getenv('CLASSIFICATION_THRESHOLD', 0.25)),
+            "classification_threshold": float(os.getenv('CLASSIFICATION_THRESHOLD', 0.15)),
             "model_loaded": backend.simulator.model_loader.model is not None if backend.simulator else False,
             "model_features": backend.model_loader.get_required_features() if backend.model_loader else [],
             "total_model_features": len(backend.model_loader.get_required_features()) if backend.model_loader else 0

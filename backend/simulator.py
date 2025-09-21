@@ -22,8 +22,8 @@ class PowerGridSimulator:
         # Initialize locations if not exists
         self.initialize_locations()
         
-        # Configuration
-        self.classification_threshold = float(os.getenv('CLASSIFICATION_THRESHOLD', 0.25))
+        # Configuration - Lower threshold to catch more illegal cases
+        self.classification_threshold = float(os.getenv('CLASSIFICATION_THRESHOLD', 0.15))
         
     def initialize_locations(self):
         """Initialize power grid locations in the database"""
@@ -165,7 +165,7 @@ class PowerGridSimulator:
             return {'is_summer': 0, 'is_monsoon': 0, 'is_winter': 1}
     
     def generate_synthetic_data(self, location: Dict) -> Dict:
-        """Generate synthetic power grid data for a location matching your dataset structure"""
+        """Generate synthetic power grid data for a location matching realistic value ranges"""
         try:
             current_time = datetime.now()
             
@@ -179,53 +179,101 @@ class PowerGridSimulator:
             season_flags = self.get_season_flags(current_time.month)
             
             # Generate realistic power readings based on area type and season
-            base_voltage = 220  # Base voltage matching your data
-            
-            # Adjust base consumption based on area type and households
+            # Base consumption per household per month (kWh) - Kerala patterns
             if area_type == 'urban':
-                base_consumption_per_household = random.uniform(120, 180)  # kWh
-                voltage_variation = random.uniform(-10, 15)
+                base_consumption_per_household = random.uniform(150, 250)  # Urban: 150-250 kWh/month
+                voltage_base = random.uniform(220, 240)  # Better voltage regulation
             elif area_type == 'semi-urban':
-                base_consumption_per_household = random.uniform(80, 140)
-                voltage_variation = random.uniform(-8, 12)
+                base_consumption_per_household = random.uniform(100, 180)  # Semi-urban: 100-180 kWh/month
+                voltage_base = random.uniform(210, 235)  # Moderate voltage variation
             else:  # rural
-                base_consumption_per_household = random.uniform(60, 100)
-                voltage_variation = random.uniform(-5, 10)
+                base_consumption_per_household = random.uniform(60, 120)   # Rural: 60-120 kWh/month
+                voltage_base = random.uniform(200, 230)  # More voltage variation
             
-            # Seasonal adjustments
+            # Seasonal adjustments (monthly consumption patterns)
             seasonal_multiplier = 1.0
             if season_flags['is_summer']:
-                seasonal_multiplier = random.uniform(1.2, 1.5)  # Higher consumption in summer
+                seasonal_multiplier = random.uniform(1.2, 1.5)  # Higher AC usage
             elif season_flags['is_winter']:
-                seasonal_multiplier = random.uniform(1.1, 1.3)  # Moderate increase in winter
+                seasonal_multiplier = random.uniform(1.1, 1.3)  # Moderate increase
+            elif season_flags['is_monsoon']:
+                seasonal_multiplier = random.uniform(0.9, 1.1)   # Lower consumption
             
-            # Calculate expected and actual consumption
+            # Calculate expected consumption (monthly)
             expected_consumption_kwh = base_consumption_per_household * households * seasonal_multiplier
             
-            # Add variation for actual consumption (some deviation from expected)
-            deviation_factor = random.uniform(0.9, 1.1)  # ±10% variation
-            actual_consumption_kwh = expected_consumption_kwh * deviation_factor
+            # Ensure expected consumption is within reasonable bounds
+            expected_consumption_kwh = max(100, min(100000, expected_consumption_kwh))
             
-            # Generate voltage and current readings
-            voltage_reading = base_voltage + voltage_variation + random.uniform(-3, 3)
-            current_reading = (actual_consumption_kwh * 1000) / (voltage_reading * random.uniform(0.8, 0.95))  # Include power factor
+            # Generate voltage reading (180-250V range)
+            voltage_variation = random.uniform(-10, 10)
+            voltage_reading = voltage_base + voltage_variation
+            voltage_reading = max(180, min(250, voltage_reading))  # Clamp to valid range
             
-            # Power characteristics
-            power_factor = random.uniform(0.75, 0.95)
-            load_factor = random.uniform(0.5, 0.9)
+            # Calculate current based on consumption (monthly average current)
+            # Monthly kWh to average power: kWh/month ÷ (30 days × 24 hours)
+            average_power_kw = expected_consumption_kwh / (30 * 24)  # Average power in kW
+            # I = P / V (assuming single phase, power factor will be applied later)
+            base_current = (average_power_kw * 1000) / voltage_reading  # Current in amperes
             
-            # Local incident reports (boolean in your data, convert to int for model)
+            # Add some realistic variation to current
+            current_reading = base_current * random.uniform(0.8, 1.2)
+            current_reading = max(1, min(500, current_reading))  # Clamp to 1-500A range
+            
+            # Generate power characteristics
+            power_factor = random.uniform(0.75, 0.95)  # Typical residential power factor
+            load_factor = random.uniform(0.3, 0.8)     # Load factor based on usage pattern
+            
+            # Local incident reports (10% chance normally)
             local_incident_reports = random.choice([0, 1]) if random.random() < 0.1 else 0
             
-            # Introduce some anomalies for illegal activities (20% chance)
+            # Make certain areas more prone to illegal activity based on risk factors
+            area_illegal_probability = 0.3  # Base 30% probability
+            
+            # Risk factor adjustments
+            if area_type == 'rural':
+                area_illegal_probability += 0.15  # Rural areas more prone
+            if distance_to_substation > 8.0:
+                area_illegal_probability += 0.1   # Far from substation
+            if households < 60:
+                area_illegal_probability += 0.08  # Smaller communities
+            
+            # Generate actual consumption and introduce anomalies
+            actual_consumption_kwh = expected_consumption_kwh
             illegal_fence_suspected = False
-            if random.random() < 0.2:
-                # Suspicious patterns
-                actual_consumption_kwh *= random.uniform(0.6, 0.8)  # Lower actual consumption (theft)
-                voltage_reading += random.uniform(-15, -5)  # Voltage drops due to illegal connections
-                power_factor *= random.uniform(0.6, 0.8)  # Poor power factor
-                local_incident_reports = 1 if random.random() < 0.3 else local_incident_reports
+            
+            if random.random() < area_illegal_probability:
+                # Create fraud patterns
+                # 1. Under-consumption (theft/bypass)
+                if random.random() < 0.6:  # 60% are under-consumption cases
+                    actual_consumption_kwh *= random.uniform(0.4, 0.7)  # 30-60% reduction
+                    voltage_reading *= random.uniform(0.85, 0.95)       # Voltage drops
+                    power_factor *= random.uniform(0.6, 0.8)            # Poor power factor
+                    current_reading *= random.uniform(0.7, 0.9)         # Lower measured current
+                
+                # 2. Over-consumption (illegal connections/fences)
+                else:  # 40% are over-consumption cases
+                    actual_consumption_kwh *= random.uniform(1.3, 1.8)  # 30-80% increase
+                    voltage_reading *= random.uniform(0.9, 0.97)        # Slight voltage drop
+                    current_reading *= random.uniform(1.2, 1.7)         # Higher current
+                    power_factor *= random.uniform(0.65, 0.85)          # Degraded power factor
+                
+                # Increase incident reports for fraud cases
+                local_incident_reports = 1 if random.random() < 0.4 else local_incident_reports
                 illegal_fence_suspected = random.choice([True, False])
+                
+                # Extreme anomaly cases (10% of fraud cases)
+                if random.random() < 0.1:
+                    voltage_reading = max(180, voltage_reading - random.uniform(15, 25))
+                    power_factor = min(power_factor, random.uniform(0.5, 0.65))
+                    current_reading *= random.uniform(1.5, 2.0)
+            
+            # Final range validation and clamping
+            actual_consumption_kwh = max(100, min(100000, actual_consumption_kwh))
+            voltage_reading = max(180, min(250, round(voltage_reading, 1)))
+            current_reading = max(1, min(500, round(current_reading, 2)))
+            power_factor = max(0.5, min(1.0, round(power_factor, 3)))
+            load_factor = max(0.1, min(1.0, round(load_factor, 4)))
             
             # Create the data record matching your dataset structure
             data_record = {
@@ -244,12 +292,12 @@ class PowerGridSimulator:
                 'timestamp': current_time,
                 'expected_consumption_kwh': round(expected_consumption_kwh, 2),
                 'actual_consumption_kwh': round(actual_consumption_kwh, 2),
-                'voltage_reading_v': round(voltage_reading, 1),
-                'current_reading_a': round(current_reading, 2),
+                'voltage_reading_v': voltage_reading,
+                'current_reading_a': current_reading,
                 'consumption_deviation_pct': round(((actual_consumption_kwh - expected_consumption_kwh) / expected_consumption_kwh) * 100, 1),
                 'illegal_fence_suspected': illegal_fence_suspected,
-                'power_factor': round(power_factor, 3),
-                'load_factor': round(load_factor, 4),
+                'power_factor': power_factor,
+                'load_factor': load_factor,
                 'consumption_per_household': round(actual_consumption_kwh / households, 2),
                 **season_flags
             }
