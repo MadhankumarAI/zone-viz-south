@@ -1,6 +1,41 @@
-import { DashboardSidebar } from "../components/DashboardSidebar";
 
+import { DashboardSidebar } from "../components/DashboardSidebar";
+import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom"
 export function Dashboard() {
+  const [voltage, setVoltage] = useState<string>("---");
+  const [fenceStatus, setFenceStatus] = useState<string>("Loading...");
+  const [heartbeat, setHeartbeat] = useState<string>("--");
+  const [deviceId, setDeviceId] = useState<string>("---");
+  const [alerts,setAlerts]=useState<Array<any>>([])
+  const navigate=useNavigate()
+  useEffect(() => {
+    // Fetch main device info ONCE
+    fetch("https://devices-hb9u.onrender.com/devices/CAM-002")
+      .then((res) => res.json())
+      .then((data) => {
+        setVoltage(data.voltage !== undefined ? String(data.voltage) : "--");
+        setFenceStatus(data.status ?? "Unknown");
+        setDeviceId(data.device_id ?? "---");
+        setHeartbeat(
+          data.last_heartbeat
+            ? new Date(data.last_heartbeat).toLocaleString()
+            : "--"
+        );
+      })
+      .catch(() => {
+        setVoltage("N/A");
+        setFenceStatus("Error");
+        setDeviceId("N/A");
+        setHeartbeat("N/A");
+      });
+      fetch("https://alerts-ib70.onrender.com/alerts/?device_id=CAM-002&limit=3")
+      .then((res) => res.json())
+      .then((data) => setAlerts(data))
+      .catch(() => setAlerts([]));
+  }, []);
+
+
   return (
     <div className="min-h-screen bg-sentinel-bg text-sentinel-text">
       {/* Main Layout */}
@@ -37,7 +72,7 @@ export function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-3xl font-bold text-sentinel-text">
-                    3.25V
+                    {voltage} V
                   </span>
                   <svg
                     className="w-4 h-4 text-sentinel-text"
@@ -73,7 +108,7 @@ export function Dashboard() {
                   Perimeter Fence Status
                 </div>
                 <div className="text-3xl font-bold text-sentinel-text mt-2">
-                  Safe
+                  {fenceStatus}
                 </div>
               </div>
 
@@ -82,7 +117,7 @@ export function Dashboard() {
                   System Heartbeat
                 </div>
                 <div className="text-3xl font-bold text-sentinel-text mt-2">
-                  Online
+                  {heartbeat} mins ago
                 </div>
               </div>
             </div>
@@ -127,7 +162,7 @@ export function Dashboard() {
                       Last Update: 2 minutes ago
                     </p>
                     <p className="text-xs text-sentinel-muted">
-                      Device ID: MAG-001-A
+                      Device ID: {deviceId}
                     </p>
                   </div>
                 </div>
@@ -140,34 +175,48 @@ export function Dashboard() {
                 Recent Critical Events
               </h3>
               <div className="space-y-4 mb-6">
-                {/* Alert placeholders */}
-                <div className="bg-sentinel-bg rounded-xl p-6 border border-red-500 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-5 h-5 bg-red-500 rounded-full"></div>
-                      <div>
-                        <h4 className="text-base font-semibold text-white">
-                          Critical Alert
-                        </h4>
-                        <p className="text-sm text-white mt-1">
-                          Unexpected voltage spike detected in Magnetometer Unit
-                          1. Review system logs immediately.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs text-sentinel-muted">
-                        2024-07-26 14:35:01
-                      </div>
-                      <button className="text-sm text-sentinel-muted hover:text-sentinel-text mt-2">
+                {alerts.length === 0 ? (
+                  <div className="text-sentinel-muted">No alerts for CAM-002.</div>
+                ) : (
+                  alerts.map((alert) => (
+                    <div
+                      key={alert.alert_id}
+                      className="bg-sentinel-bg rounded-xl p-6 border border-red-500 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-5 h-5 bg-red-500 rounded-full"></div>
+                          <div>
+                            <h4 className="text-base font-semibold text-sentinel-text">
+                              {alert.title}
+                            </h4>
+                            <p className="text-sm text-sentinel-text mt-1">{alert.description}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-sentinel-muted">
+                            {new Date(alert.timestamp).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-sentinel-muted">
+                            Severity: {alert.severity}
+                          </div>
+                          <div className="text-xs text-sentinel-muted">
+                            Status: {alert.status}
+                          </div>
+                          <button className="text-sm text-sentinel-muted hover:text-sentinel-text mt-2">
                         Acknowledge
                       </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  ))
+                )}
+                
               </div>
-
-              <button className="w-full flex items-center justify-center gap-3 text-sentinel-green text-sm font-medium hover:text-sentinel-green/80 transition-colors">
+              
+              <button
+               onClick={()=>navigate("/alerts")}
+               className="w-full flex items-center justify-center gap-3 text-sentinel-green text-sm font-medium hover:text-sentinel-green/80 transition-colors">
                 View All Alerts
                 <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                   <path

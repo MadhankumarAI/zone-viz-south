@@ -1,24 +1,31 @@
+import { useState } from "react";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { AlertsSidebar } from "../components/alerts/AlertsSidebar";
 import { AlertsFeed } from "../components/alerts/AlertsFeed";
 import { ActivitySummary } from "../components/alerts/ActivitySummary";
 
 export function Alerts() {
+  const [selectedFilters, setSelectedFilters] = useState({
+    severity: [],
+    status: [],
+    category: []
+  });
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <DashboardHeader />
+      {/*<DashboardHeader />*/}
 
       {/* Main Layout - Responsive */}
       <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
         {/* Left Sidebar - Filters - Responsive */}
         <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-border">
-          <AlertsSidebar />
+          <AlertsSidebar selectedFilters={selectedFilters} setSelectedFilters={setSelectedFilters} />
         </div>
 
         {/* Main Content - Alerts Feed - Responsive */}
         <div className="flex-1 overflow-hidden">
-          <AlertsFeed />
+          <AlertsFeed selectedFilters={selectedFilters} />
         </div>
 
         {/* Right Sidebar - Activity Summary - Hidden on mobile, collapsible on tablet */}
